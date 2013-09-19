@@ -4,9 +4,10 @@ package controllers
 import (
 	"encoding/json"
 	//"fmt"
-	"icecar/models"
+	"github.com/ginuerzh/icecar/models"
 	//"labix.org/v2/mgo"
 	//"labix.org/v2/mgo/bson"
+	"github.com/ginuerzh/icecar/errors"
 	"time"
 )
 
@@ -17,7 +18,13 @@ type UserController struct {
 func (this *UserController) Register() {
 	var user models.User
 
-	json.Unmarshal(this.Ctx.RequestBody, &user)
+	//json.Unmarshal(this.Ctx.RequestBody, &user)
+	decoder := json.NewDecoder(this.Ctx.Request.Body)
+	if err := decoder.Decode(&user); err != nil {
+		this.Data["json"] = this.response(nil, &errors.JsonError)
+		this.ServeJson()
+		return
+	}
 
 	user.Userid = user.Email
 	user.Password = this.md5(user.Password)
@@ -39,11 +46,12 @@ func (this *UserController) Register() {
 func (this *UserController) Login() {
 	var user models.User
 
-	json.Unmarshal(this.Ctx.RequestBody, &user)
-
-	if len(this.Ctx.RequestBody) == 0 {
-		user.Userid = this.GetString("userid")
-		user.Password = this.GetString("password")
+	//json.Unmarshal(this.Ctx.RequestBody, &user)
+	decoder := json.NewDecoder(this.Ctx.Request.Body)
+	if err := decoder.Decode(&user); err != nil {
+		this.Data["json"] = this.response(nil, &errors.JsonError)
+		this.ServeJson()
+		return
 	}
 
 	user.Password = this.md5(user.Password)
@@ -70,10 +78,12 @@ func (this *UserController) Logout() {
 func (this *UserController) UserInfo() {
 	var user models.User
 
-	json.Unmarshal(this.Ctx.RequestBody, &user)
-
-	if len(this.Ctx.RequestBody) == 0 {
-		user.Userid = this.GetString("userid")
+	//json.Unmarshal(this.Ctx.RequestBody, &user)
+	decoder := json.NewDecoder(this.Ctx.Request.Body)
+	if err := decoder.Decode(&user); err != nil {
+		this.Data["json"] = this.response(nil, &errors.JsonError)
+		this.ServeJson()
+		return
 	}
 
 	if err := user.Load(); err != nil {

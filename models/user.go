@@ -2,7 +2,7 @@
 package models
 
 import (
-	"icecar/errors"
+	"github.com/ginuerzh/icecar/errors"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 	"time"

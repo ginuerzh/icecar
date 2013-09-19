@@ -3,8 +3,8 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/ginuerzh/icecar/errors"
 	"github.com/ginuerzh/weedo"
-	"icecar/errors"
 )
 
 type FileController struct {
@@ -19,13 +19,22 @@ func (this *FileController) Upload() {
 		return
 	}
 
-	fmt.Println(string(this.Ctx.RequestBody))
-
-	client := weedo.NewClient("http://localhost:9333")
-	url, err := client.Upload(header.Filename, header.Header.Get("Content-Type"), file)
+	client := weedo.NewClient("localhost:9333")
+	fid, err := client.Upload(header.Filename, file)
 	if err != nil {
 		fmt.Println(err)
+		this.Data["json"] = this.response(nil, &errors.FileUploadError)
+		this.ServeJson()
+		return
 	}
+	url, err := client.GetUrl(fid)
+	if err != nil {
+		fmt.Println(err)
+		this.Data["json"] = this.response(nil, &errors.FileUploadError)
+		this.ServeJson()
+		return
+	}
+
 	this.Data["json"] = this.response(map[string]interface{}{"url": url}, nil)
 	this.ServeJson()
 }

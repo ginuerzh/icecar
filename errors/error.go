@@ -24,6 +24,7 @@ var (
 	ReviewNotFoundError = Error{1017, "review not found"}
 	InviteCodeError     = Error{1018, "invite code invalid"}
 	FileTooLargeError   = Error{1019, "file too large"}
+	FileUploadError     = Error{1020, "file upload error"}
 )
 
 type Error struct {
