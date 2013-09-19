@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/astaxie/beego"
-	"icecar/controllers"
-	"icecar/models"
+	"github.com/ginuerzh/icecar/controllers"
+	"github.com/ginuerzh/icecar/models"
 	//"icecar/filters"
 	"labix.org/v2/mgo"
 )
