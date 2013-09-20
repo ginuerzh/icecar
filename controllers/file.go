@@ -22,7 +22,7 @@ func (this *FileController) Upload() {
 	}
 
 	log.Println(header.Filename)
-	fid, size, err := weedo.Upload(header.Filename, file)
+	fid, size, err := weedo.AssignUpload(header.Filename, file)
 	if err != nil {
 		fmt.Println(err)
 		this.Data["json"] = this.response(nil, &errors.FileUploadError)
