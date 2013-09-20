@@ -6,6 +6,7 @@ import (
 	"github.com/ginuerzh/icecar/models"
 	//"icecar/filters"
 	"labix.org/v2/mgo"
+	"log"
 )
 
 func main() {
@@ -14,6 +15,8 @@ func main() {
 	beego.Router("/user/logout", &controllers.UserController{}, "get:Logout")
 	beego.Router("/user/getInfo", &controllers.UserController{}, "get,post:UserInfo")
 	beego.Router("/file/upload", &controllers.FileController{}, "post:Upload")
+	beego.Router("/file/del/:all", &controllers.FileController{}, "get:Delete")
+	beego.Router("/file/:all", &controllers.FileController{}, "get:Download")
 
 	//beego.FilterPrefixPath("/user/getInfo", filters.AccessFilter)
 
@@ -22,9 +25,10 @@ func main() {
 		panic(err)
 		return
 	}
-
 	models.DB = session.DB(beego.AppConfig.String("mongodb"))
 	defer session.Close()
+
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	beego.Debug("start server")
 	beego.Run()

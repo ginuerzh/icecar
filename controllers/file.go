@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/ginuerzh/icecar/errors"
 	"github.com/ginuerzh/weedo"
+	"io"
+	"log"
 )
 
 type FileController struct {
@@ -19,22 +21,40 @@ func (this *FileController) Upload() {
 		return
 	}
 
-	client := weedo.NewClient("localhost:9333")
-	fid, err := client.Upload(header.Filename, file)
+	log.Println(header.Filename)
+	fid, size, err := weedo.Upload(header.Filename, file)
 	if err != nil {
 		fmt.Println(err)
 		this.Data["json"] = this.response(nil, &errors.FileUploadError)
 		this.ServeJson()
 		return
 	}
-	url, err := client.GetUrl(fid)
+	resp := map[string]interface{}{"fid": fid, "name": header.Filename, "size": size}
+	this.Data["json"] = this.response(resp, nil)
+	this.ServeJson()
+}
+
+func (this *FileController) Download() {
+	fid := this.Ctx.Params[":all"]
+	file, err := weedo.Download(fid)
 	if err != nil {
-		fmt.Println(err)
-		this.Data["json"] = this.response(nil, &errors.FileUploadError)
+		this.Data["json"] = this.response(nil, &errors.FileNotFoundError)
 		this.ServeJson()
 		return
+	}
+	//url, _ := weedo.GetUrl(fid)
+	//this.Redirect(url, 302)
+	defer file.Close()
+
+	io.Copy(this.Ctx.ResponseWriter, file)
+}
+
+func (this *FileController) Delete() {
+	fid := this.Ctx.Params[":all"]
+	if err := weedo.Delete(fid); err != nil {
+		log.Println(err)
 	}
 
-	this.Data["json"] = this.response(map[string]interface{}{"url": url}, nil)
+	this.Data["json"] = this.response(nil, nil)
 	this.ServeJson()
 }
