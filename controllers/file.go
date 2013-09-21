@@ -35,7 +35,7 @@ func (this *FileController) Upload() {
 }
 
 func (this *FileController) Download() {
-	fid := this.Ctx.Params[":all"]
+	fid := this.Ctx.Input.Param[":all"]
 	file, err := weedo.Download(fid)
 	if err != nil {
 		this.Data["json"] = this.response(nil, &errors.FileNotFoundError)
@@ -50,7 +50,7 @@ func (this *FileController) Download() {
 }
 
 func (this *FileController) Delete() {
-	fid := this.Ctx.Params[":all"]
+	fid := this.Ctx.Input.Param[":all"]
 	if err := weedo.Delete(fid); err != nil {
 		log.Println(err)
 	}
